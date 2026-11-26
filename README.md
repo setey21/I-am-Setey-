@@ -1,12 +1,12 @@
 # Setey Brhaney Haftie - Professional Portfolio
 
-A responsive React portfolio with a private CV-management dashboard. The public portfolio is a frontend application; protected Vercel serverless API routes handle administrator sign-in and CV uploads. The CV is stored in Vercel Blob as a public PDF so portfolio visitors can download the current version. No database is used.
+A responsive React portfolio with a private CV-management dashboard and an email-enabled contact form. Vercel serverless API routes handle administrator sign-in, CV uploads, and contact form delivery. The CV is stored in Vercel Blob as a public PDF so portfolio visitors can download the current version. Contact messages are sent to the email address shown on the portfolio through Resend. No database is used.
 
 ## What visitors can do
 
 - View the portfolio, education, skills, internship, training, project areas, and contact details.
 - Download the current public CV.
-- Use the contact form, which validates the message and opens their email application. It does not store or send messages through a server.
+- Send a message through the contact form. The message is delivered to the portfolio email address, and the visitor's email is set as the reply-to address.
 
 Visitors do not receive an upload control. The `/admin` page is not linked in the public navigation. Someone who types `/admin` can reach the sign-in screen, but cannot see the authenticated dashboard or upload anything without the administrator password.
 
@@ -69,6 +69,20 @@ After connecting Blob and adding secrets, redeploy so the serverless functions r
 
 The login route is not linked from the public site and is marked `noindex`, but do not rely on an obscure URL as security. The password and API authorization are the access controls. Use a strong unique password; consider enabling Vercel Firewall rate limiting for `POST /api/admin/login` where available.
 
+## Configure automatic contact email
+
+The contact form sends messages to the email address in `src/data/content.js` using Resend. The API key and sender address stay on the server and must never use a `VITE_` prefix.
+
+1. Create a Resend account and verify a domain you control. Add the DNS records Resend provides at your domain registrar.
+2. Create a Resend API key.
+3. In Vercel **Project Settings → Environment Variables**, add:
+   - `RESEND_API_KEY`: the private API key from Resend.
+   - `RESEND_FROM_EMAIL`: a sender on the verified domain, such as `Portfolio Contact <contact@your-domain.com>`.
+4. Apply the values to Production (and Preview if needed), then redeploy.
+5. Submit a test message from the public contact form and confirm it arrives at the portfolio email address.
+
+Do not commit the Resend API key or put it in a `VITE_` variable. The API checks same-origin requests, validates and size-limits fields, and includes a honeypot. Consider enabling Vercel Firewall rate limiting for `POST /api/contact` to reduce spam.
+
 ## Run and test locally
 
 Requirements: Node.js 20.19+ or 22.12+, and npm.
@@ -113,6 +127,7 @@ npm run build
 - `src/AdminDashboard.jsx` - Unlinked administrator login and upload interface.
 - `src/data/content.js` - Portfolio content.
 - `api/admin/` - Password login, session check, logout, and protected upload endpoints.
+- `api/contact.js` - Validates contact messages and sends them using Resend.
 - `api/cv.js` - Provides the current public CV download URL.
 - `server/adminAuth.js` - Signed session and origin-validation helpers.
 - `public/images/setey.jpg` - Provided portrait.

@@ -38,6 +38,9 @@ function Portfolio() {
   const [showTop, setShowTop] = useState(false)
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
   const [formError, setFormError] = useState('')
+  const [formStatus, setFormStatus] = useState('')
+  const [contactTrap, setContactTrap] = useState('')
+  const [sendingContact, setSendingContact] = useState(false)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -80,19 +83,47 @@ function Portfolio() {
     setMenuOpen(false)
   }
 
-  const submitContact = (event) => {
+  const submitContact = async (event) => {
     event.preventDefault()
     if (!form.name.trim() || !form.email.trim() || !form.subject.trim() || !form.message.trim()) {
-      setFormError('Please complete every field before opening your email application.')
+      setFormStatus('')
+      setFormError('Please complete every field before sending your message.')
       return
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      setFormStatus('')
       setFormError('Please enter a valid email address.')
       return
     }
     setFormError('')
-    const body = `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`
-    window.location.href = `mailto:${personalInfo.email}?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(body)}`
+    setFormStatus('')
+    setSendingContact(true)
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, website: contactTrap }),
+      })
+      if (!(response.headers.get('content-type') || '').includes('application/json')) {
+        throw new Error('The contact email service is unavailable here. Please use the email link on this page.')
+      }
+      let result
+      try {
+        result = await response.json()
+      } catch {
+        throw new Error('The contact service returned an invalid response. Please try again later.')
+      }
+      if (!response.ok) throw new Error(result.error || 'Your message could not be sent. Please try again.')
+      setForm({ name: '', email: '', subject: '', message: '' })
+      setContactTrap('')
+      setFormStatus('Your message was sent successfully. Thank you for getting in touch.')
+    } catch (error) {
+      setFormError(error instanceof TypeError
+        ? 'Could not reach the contact service. Please try again later or use the email link on this page.'
+        : error instanceof Error ? error.message : 'Your message could not be sent. Please try again.')
+    } finally {
+      setSendingContact(false)
+    }
   }
 
   const filteredProjects = projectFilter === 'All'
@@ -300,15 +331,17 @@ function Portfolio() {
               <div className="contact-detail"><span><MapPin /></span><div><small>Location</small><strong>{personalInfo.location}</strong></div></div>
               {personalInfo.github.map((github) => <a href={github} target="_blank" rel="noreferrer" key={github}><span><ExternalLink /></span><div><small>GitHub</small><strong>{github.replace('https://', '')}</strong></div></a>)}
             </div>
-            <form className="contact-form" onSubmit={submitContact} noValidate>
+            <form className="contact-form" onSubmit={submitContact} noValidate aria-busy={sendingContact}>
+              <label className="contact-trap" aria-hidden="true">Leave this field empty<input tabIndex={-1} autoComplete="off" value={contactTrap} onChange={(event) => setContactTrap(event.target.value)} /></label>
               <div className="form-row">
-                <label>Full name<input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder="Your name" /></label>
-                <label>Email<input type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} placeholder="you@example.com" /></label>
+                <label>Full name<input value={form.name} onChange={(event) => { setForm({ ...form, name: event.target.value }); setFormError(''); setFormStatus('') }} placeholder="Your name" /></label>
+                <label>Email<input type="email" value={form.email} onChange={(event) => { setForm({ ...form, email: event.target.value }); setFormError(''); setFormStatus('') }} placeholder="you@example.com" /></label>
               </div>
-              <label>Subject<input value={form.subject} onChange={(event) => setForm({ ...form, subject: event.target.value })} placeholder="Project or opportunity" /></label>
-              <label>Message<textarea value={form.message} onChange={(event) => setForm({ ...form, message: event.target.value })} placeholder="Tell me about your message..." rows="6" /></label>
+              <label>Subject<input value={form.subject} onChange={(event) => { setForm({ ...form, subject: event.target.value }); setFormError(''); setFormStatus('') }} placeholder="Project or opportunity" /></label>
+              <label>Message<textarea value={form.message} onChange={(event) => { setForm({ ...form, message: event.target.value }); setFormError(''); setFormStatus('') }} placeholder="Tell me about your message..." rows="6" /></label>
               {formError && <p className="form-error" role="alert">{formError}</p>}
-              <button className="button" type="submit">Open Email App <ExternalLink /></button>
+              {formStatus && <p className="form-success" role="status">{formStatus}</p>}
+              <button className="button" type="submit" disabled={sendingContact}>{sendingContact ? 'Sending…' : 'Send Message'} <Mail /></button>
             </form>
           </div>
         </section>
