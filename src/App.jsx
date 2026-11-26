@@ -30,6 +30,7 @@ function SectionTitle({ eyebrow, title, description }) {
 
 function Portfolio() {
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark')
+  const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'en')
   const [cvDownloadUrl, setCvDownloadUrl] = useState('/Setey-Brhaney-Haftie-CV.pdf')
   const [cvLoadError, setCvLoadError] = useState('')
   const [menuOpen, setMenuOpen] = useState(false)
@@ -46,6 +47,53 @@ function Portfolio() {
     document.documentElement.dataset.theme = theme
     localStorage.setItem('theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    localStorage.setItem('language', language)
+    document.documentElement.lang = language === 'am' ? 'am' : language === 'ti' ? 'ti' : 'en'
+  }, [language])
+
+  const copy = {
+    en: {
+      hello: "Hello, I'm Setey Brhaney",
+      title: 'Building Digital Experiences Through Technology.',
+      lead: 'I am a Computer Science graduate and Full-Stack Web & Mobile Developer interested in creating modern, useful, and scalable digital applications.',
+      projects: 'Explore My Projects',
+      download: 'Download CV',
+      contact: 'Contact Me',
+      aboutEyebrow: 'About Me',
+      aboutTitle: 'A strong foundation across software and systems.',
+      degree: 'B.Sc.',
+      computerScience: 'Computer Science',
+      internship: 'IT internship',
+    },
+    am: {
+      hello: 'ሰላም፣ እኔ ሰቴይ ብርሃኔ ነኝ',
+      title: 'በቴክኖሎጂ ዲጂታል ተሞክሮዎችን እገነባለሁ።',
+      lead: 'ዘመናዊ፣ ጠቃሚ እና ሊሰፋ የሚችል ዲጂታል መተግበሪያዎችን በማዘጋጀት ላይ የምሰራ የኮምፒዩተር ሳይንስ ተመራቂ እና የድር እና የሞባይል አማራጭ ገጽታ አዘጋጅ ነኝ።',
+      projects: 'ፕሮጀክቶቼን ይመልከቱ',
+      download: 'ሲቪ አውርድ',
+      contact: 'ያነጋግሩኝ',
+      aboutEyebrow: 'ስለ እኔ',
+      aboutTitle: 'በሶፍትዌር እና በሲስተም ጠንካራ መሠረት።',
+      degree: 'ባችለር',
+      computerScience: 'ኮምፒዩተር ሳይንስ',
+      internship: 'የአይቲ የሙያ ልምድ',
+    },
+    ti: {
+      hello: 'ሰላም፣ ኣነ ሰተይ ብርሃነይ እየ',
+      title: 'ብቴክኖሎጂ ዲጂታላዊ ተመኩሮታት እሕንጥር።',
+      lead: 'ዘመናዊ፣ ጠቕሚ ዝሃብን ምስፍሓል ዝኽእልን ዲጂታላዊ ኣፕሊኬሽናት ዝገንብ ወጻኢ ዝተማሃረ ኮምፒዩተር ሳይንስ ተመራቂን ወርካ ሞባይል ደቨሎፐርን እየ።',
+      projects: 'ፕሮጀክታተይ ርአ',
+      download: 'ሲቪ ኣውርድ',
+      contact: 'ርኸበኒ',
+      aboutEyebrow: 'ብዛዕባይ',
+      aboutTitle: 'ብሶፍትዌርን ስርዓትን ሓያል መሰረት።',
+      degree: 'ባችለር',
+      computerScience: 'ኮምፒዩተር ሳይንስ',
+      internship: 'ኣይቲ ልምዲ ስራሕ',
+    },
+  }[language]
 
   useEffect(() => {
     let cancelled = false
@@ -145,6 +193,13 @@ function Portfolio() {
             ))}
           </div>
           <div className="nav-actions">
+            <label className="language-switch" aria-label="Select language">
+              <select value={language} onChange={(event) => setLanguage(event.target.value)}>
+                <option value="en">English</option>
+                <option value="am">Amharic</option>
+                <option value="ti">Tigrinya</option>
+              </select>
+            </label>
             <button className="icon-button" type="button" aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`} onClick={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')}>
               {theme === 'dark' ? <Sun /> : <Moon />}
             </button>
@@ -156,17 +211,17 @@ function Portfolio() {
       <main id="main">
         <section className="hero section" id="home">
           <div className="hero-copy">
-            <p className="eyebrow">Hello, I'm Setey Brhaney</p>
-            <h1>Building Digital Experiences <span>Through Technology.</span></h1>
-            <p className="hero-lead">I am a Computer Science graduate and Full-Stack Web & Mobile Developer interested in creating modern, useful, and scalable digital applications.</p>
+            <p className="eyebrow">{copy.hello}</p>
+            <h1>{copy.title}</h1>
+            <p className="hero-lead">{copy.lead}</p>
             <div className="hero-meta">
               <span><MapPin /> {personalInfo.location}</span>
               <span><BriefcaseBusiness /> {personalInfo.title}</span>
             </div>
             <div className="button-row">
-              <button className="button" type="button" onClick={() => scrollTo('projects')}>Explore My Projects <ArrowRight /></button>
-              <a className="button button-secondary" href={cvDownloadUrl} download><Download /> Download CV</a>
-              <button className="text-button" type="button" onClick={() => scrollTo('contact')}>Contact Me <ChevronRight /></button>
+              <button className="button" type="button" onClick={() => scrollTo('projects')}>{copy.projects} <ArrowRight /></button>
+              <a className="button button-secondary" href={cvDownloadUrl} download><Download /> {copy.download}</a>
+              <button className="text-button" type="button" onClick={() => scrollTo('contact')}>{copy.contact} <ChevronRight /></button>
             </div>
           </div>
           <div className="hero-visual" aria-label="Setey Brhaney professional initials portrait">
@@ -185,7 +240,7 @@ function Portfolio() {
         </section>
 
         <section className="section" id="about">
-          <SectionTitle eyebrow="About Me" title="A strong foundation across software and systems." />
+          <SectionTitle eyebrow={copy.aboutEyebrow} title={copy.aboutTitle} />
           <div className="about-grid">
             <div className="about-copy">
               <p>I am a Computer Science graduate from the University of Gondar, Ethiopia. My education developed a foundation in computing, databases, software development, and problem-solving.</p>
@@ -197,8 +252,19 @@ function Portfolio() {
                 <img src="/images/illustrations/about-systems.svg" alt="Illustration of web development, connected systems, and data" />
               </div>
               <div className="stats-grid">
-                {[['B.Sc.', 'Computer Science'], ['3.27', 'CGPA / 4.00'], ['60%', 'National Exit Exam'], ['3 Months', 'IT internship']].map(([value, label]) => (
-                  <article className="stat-card" key={label}><strong>{value}</strong><span>{label}</span></article>
+                {[
+                  { value: copy.degree, label: copy.computerScience },
+                  { value: '3 Months', label: copy.internship },
+                  { value: 'Full-Stack', label: 'Web & Mobile Development' },
+                  { value: 'Professional', label: 'IT & Database' },
+                  { value: 'Languages', languages: ['Amharic — Native', 'English — Professional', 'Tigrigna — Native'] },
+                ].map(({ value, label, languages }) => (
+                  <article className="stat-card" key={value}>
+                    <strong>{value}</strong>
+                    {languages
+                      ? <ul className="stat-language-list">{languages.map((item) => <li key={item}>{item}</li>)}</ul>
+                      : <span>{label}</span>}
+                  </article>
                 ))}
               </div>
             </div>
@@ -267,11 +333,6 @@ function Portfolio() {
             <article className="card education-card">
               <div className="education-icon"><GraduationCap /></div>
               <div><p className="education-label">Bachelor's degree</p><h3>{personalInfo.education.degree}</h3><p>{personalInfo.education.university}</p></div>
-              <dl>
-                <div><dt>Graduation</dt><dd>{personalInfo.education.graduation}</dd></div>
-                <div><dt>CGPA</dt><dd>{personalInfo.education.cgpa}</dd></div>
-                <div><dt>Exit exam</dt><dd>{personalInfo.education.examScore}</dd></div>
-              </dl>
             </article>
             <div className="cv-actions">
               <div>

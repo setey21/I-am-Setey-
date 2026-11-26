@@ -10,8 +10,6 @@ export const personalInfo = {
     degree: 'B.Sc. in Computer Science',
     university: 'University of Gondar, Ethiopia',
     graduation: 'June 23, 2026',
-    cgpa: '3.27/4.00',
-    examScore: '60%',
   },
 }
 
@@ -26,6 +24,11 @@ export const navItems = [
 ]
 
 export const skills = [
+  {
+    category: 'Languages',
+    items: ['Amharic - Native', 'English - Professional', 'Tigrinya - Native'],
+    description: 'Communication skills across local and professional contexts.',
+  },
   {
     category: 'Frontend Development',
     items: ['HTML5', 'CSS3', 'JavaScript', 'React.js'],
