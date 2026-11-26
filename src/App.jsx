@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import {
   ArrowRight, ArrowUp, Award, BriefcaseBusiness, Check, ChevronRight,
-  Code2, Download, ExternalLink, GraduationCap, Mail, Menu,
-  Moon, Phone, Sun, X, MapPin,
+  Code2, Database, Download, ExternalLink, GraduationCap, Layers3, Mail,
+  Menu, Monitor, Moon, Network, Phone, Smartphone, Sun, Workflow, X, MapPin,
 } from 'lucide-react'
 import {
   certifications, experience, navItems, personalInfo, processSteps, projects,
@@ -11,6 +11,12 @@ import {
 import AdminDashboard from './AdminDashboard'
 
 const copyrightYear = new Date().getFullYear()
+const serviceVisuals = [Monitor, Code2, Layers3, Smartphone, Workflow, Database, Network]
+const projectIllustrations = {
+  'Web Development': '/images/illustrations/project-web.svg',
+  'Mobile Development': '/images/illustrations/project-mobile.svg',
+  'Database Systems': '/images/illustrations/project-data.svg',
+}
 
 function SectionTitle({ eyebrow, title, description }) {
   return (
@@ -155,10 +161,15 @@ function Portfolio() {
               <p>I complemented my degree with postgraduate full-stack web and mobile development training and an IT, Network, and Database Administration internship at the University of Gondar Data Center.</p>
               <p>I am particularly interested in modern web applications, cross-platform mobile applications, RESTful APIs, database systems, and reliable digital solutions.</p>
             </div>
-            <div className="stats-grid">
-              {[['B.Sc.', 'Computer Science'], ['3.27', 'CGPA / 4.00'], ['60%', 'National Exit Exam'], ['3 Months', 'IT internship']].map(([value, label]) => (
-                <article className="stat-card" key={label}><strong>{value}</strong><span>{label}</span></article>
-              ))}
+            <div className="about-highlights">
+              <div className="about-visual">
+                <img src="/images/illustrations/about-systems.svg" alt="Illustration of web development, connected systems, and data" />
+              </div>
+              <div className="stats-grid">
+                {[['B.Sc.', 'Computer Science'], ['3.27', 'CGPA / 4.00'], ['60%', 'National Exit Exam'], ['3 Months', 'IT internship']].map(([value, label]) => (
+                  <article className="stat-card" key={label}><strong>{value}</strong><span>{label}</span></article>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -200,9 +211,15 @@ function Portfolio() {
             ))}
           </div>
           <div className="card-grid project-grid">
-            {filteredProjects.map((project, index) => (
+            {filteredProjects.map((project) => (
               <article className="card project-card" key={project.title}>
-                <div className={`project-visual project-${index % 3}`}><span>{project.category}</span><Code2 /></div>
+                <div className="project-visual">
+                  <img
+                    src={projectIllustrations[project.category] || projectIllustrations['Web Development']}
+                    alt={`Concept illustration for ${project.title}`}
+                  />
+                  <span>{project.category}</span>
+                </div>
                 <div className="project-body">
                   <p className="project-category">{project.category}</p><h3>{project.title}</h3><p>{project.description}</p>
                   <div className="tag-list">{project.stack.map((item) => <span key={item}>{item}</span>)}</div>
@@ -251,9 +268,16 @@ function Portfolio() {
         <section className="section" id="services">
           <SectionTitle eyebrow="Services" title="Areas where I can contribute." />
           <div className="card-grid services-grid">
-            {services.map(([title, description]) => (
-              <article className="card service-card" key={title}><div className="service-number"><Check /></div><h3>{title}</h3><p>{description}</p></article>
-            ))}
+            {services.map(([title, description], index) => {
+              const ServiceVisual = serviceVisuals[index % serviceVisuals.length]
+              return (
+                <article className="card service-card" key={title}>
+                  <div className="service-art"><ServiceVisual aria-hidden="true" /></div>
+                  <h3>{title}</h3>
+                  <p>{description}</p>
+                </article>
+              )
+            })}
           </div>
         </section>
 

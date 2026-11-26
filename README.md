@@ -80,16 +80,24 @@ npm run dev
 
 `npm run dev` starts the Vite website. Vercel API routes require the Vercel development server. To test the complete admin/upload flow locally:
 
-1. Link the folder to your Vercel project with the Vercel CLI.
-2. Connect a Blob store to the project's Development environment.
-3. Pull Development environment values with `vercel env pull .env.local`.
-4. Run:
+1. Sign in to Vercel and link this folder:
 
    ```bash
-   npx vercel dev
+   npx vercel login
+   npx vercel link
    ```
 
-Keep `.env.local` private; it is ignored by Git.
+2. Connect a Blob store to the project's Development environment and configure the admin secrets in Vercel.
+3. Pull Development environment values and start the full app:
+
+   ```bash
+   npx vercel env pull .env.local
+   npm run dev:vercel
+   ```
+
+4. Open the local URL printed by Vercel (typically `http://localhost:3000`) and add `/admin`.
+
+Keep `.env.local` private; it is ignored by Git. The `npm run dev` Vite preview on port 5173 does not serve the serverless API routes, so admin sign-in and uploads cannot work from that preview.
 
 Run the code checks with:
 

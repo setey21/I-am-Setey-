@@ -4,6 +4,7 @@ import { ArrowLeft, CheckCircle2, FileText, LogOut, ShieldCheck, Upload } from '
 
 const MAX_FILE_BYTES = 50 * 1024 * 1024
 const CV_PATH = 'portfolio-cv/Setey-Brhaney-Haftie-CV.pdf'
+const ADMIN_API_HELP = 'Vite preview does not run the admin API. Link this project to Vercel, configure Blob and the admin secrets, then run `npm run dev:vercel`.'
 
 async function readResponse(response) {
   const payload = await response.json().catch(() => ({}))
@@ -42,13 +43,13 @@ export default function AdminDashboard() {
         }
         setAuthStatus('signed-out')
         if (response.status !== 401) {
-          setError('The admin API is unavailable. Configure this project on Vercel and use `npx vercel dev` for local dashboard testing.')
+          setError(ADMIN_API_HELP)
         }
       })
       .catch(() => {
         if (!cancelled) {
           setAuthStatus('signed-out')
-          setError('Cannot reach the admin API. Run this project with `vercel dev` and configure the required environment variables.')
+          setError(ADMIN_API_HELP)
         }
       })
     return () => { cancelled = true }
